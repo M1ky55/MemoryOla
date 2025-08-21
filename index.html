@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memory dla Oli</title>
+<style>
+  body { font-family: sans-serif; text-align: center; background: #fff; margin: 0; padding: 20px; }
+  h1 { font-size: 24px; }
+  #memory-board { display: grid; grid-template-columns: repeat(6, 1fr); grid-gap: 10px; max-width: 600px; margin: 20px auto; }
+  .card { background: #333; border-radius: 10px; height: 80px; display: flex; align-items: center; justify-content: center; color: transparent; font-size: 36px; cursor: pointer; user-select: none; }
+  .card.flipped { color: #fff; background: #f05; }
+  #message { display: none; font-size: 24px; margin-top: 30px; color: #f00; }
+  @media (max-width: 500px) { .card { height: 60px; font-size: 28px; } }
+</style>
+</head>
+<body>
+
+<h1>Memory</h1>
+<p>Znajdź wszystkie pary!</p>
+
+<div id="memory-board"></div>
+<div id="message">Ola, to chyba nie tylko zauroczenie 😁</div>
+
+<!-- Muzyka w tle -->
+<audio id="bgMusic" src="love.mp3" preload="auto"></audio>
+
+<script>
+const symbols = ['❤️','🌹','💌','🌙','💍','🕊️','💐','🍎','🐱','🐶','🍌','🍇','🐰'];
+let cards = [];
+symbols.forEach(sym => { cards.push(sym); cards.push(sym); });
+cards.sort(() => Math.random() - 0.5);
+
+const board = document.getElementById('memory-board');
+cards.forEach(symbol => {
+  const card = document.createElement('div');
+  card.classList.add('card');
+  card.textContent = symbol;
+  board.appendChild(card);
+});
+
+let flipped = [];
+let matched = 0;
+
+board.addEventListener('click', e => {
+  const clicked = e.target;
+  if (!clicked.classList.contains('card') || clicked.classList.contains('flipped') || flipped.length === 2) return;
+
+  clicked.classList.add('flipped');
+  flipped.push(clicked);
+
+  if (flipped.length === 2) {
+    if (flipped[0].textContent === flipped[1].textContent) {
+      matched += 2;
+      flipped = [];
+      if (matched === cards.length) {
+        setTimeout(() => {
+          document.getElementById('message').style.display = 'block';
+          document.getElementById('bgMusic').play();
+        }, 500);
+      }
+    } else {
+      setTimeout(() => {
+        flipped.forEach(card => card.classList.remove('flipped'));
+        flipped = [];
+      }, 1000);
+    }
+  }
+});
+</script>
+
+</body>
+</html>
